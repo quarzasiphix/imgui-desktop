@@ -30,24 +30,25 @@ gui::gui(app& app_object) : my_app(app_object) {
     }
 
 
-    // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+    // Setup ImGui context
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(app_object.window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
 
 }
 
 void gui::run() {
 
-
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
+    // Start ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
     face();
 
     ImGui::Render();
 
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -58,5 +59,9 @@ void gui::run() {
 }
 
 void gui::face() {
+    ImGui::Begin("yo");
+       
+    ImGui::Text("sup");
 
+    ImGui::End();
 }

@@ -1,7 +1,10 @@
 #pragma once
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_win32.h>
-#include <imgui/imgui_impl_dx11.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
-#include <d3d11.h>
-#include <tchar.h>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
