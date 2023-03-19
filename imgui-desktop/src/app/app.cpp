@@ -16,7 +16,7 @@
 //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 //IM_ASSERT(font != NULL);
 
-app::app() {
+app::app(std::unique_ptr<gui> gui_ptr) : my_gui(std::move(gui_ptr)) {
     glfwInit();
     // Set OpenGL version to 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -45,12 +45,17 @@ app::app() {
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    my_gui = std::make_unique<gui>(*this);
+    if (my_gui->init(this))
+        return true;
+    return false;
+}
+
+bool app::init () {
+ 
 }
 
 app::~app() {
     glfwTerminate();
-    my_gui.reset();
 }
 
 void app::loop() {

@@ -1,6 +1,8 @@
 #include "gui.hpp"
 
-gui::gui(app& app_object) : my_app(&app_object) {
+bool gui::init(app* app_object) {
+    // Setup Dear ImGui context
+    my_app = std::unique_ptr<app>(app_object);
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -23,16 +25,17 @@ gui::gui(app& app_object) : my_app(&app_object) {
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
     // Setup ImGui context
     ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(app_object.window, true);
+    ImGui_ImplGlfw_InitForOpenGL(app_object->window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
+
+    return true;
 }
 
 gui::~gui() {
@@ -57,8 +60,7 @@ void gui::run() {
 
     // Update and Render additional Platform Windows
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
@@ -66,8 +68,6 @@ void gui::run() {
 
 void gui::face() {
     ImGui::Begin("yo");
-       
     ImGui::Text("sup");
-
     ImGui::End();
 }
