@@ -18,7 +18,6 @@
 
 app::app() {
     glfwInit();
-
     // Set OpenGL version to 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -33,25 +32,43 @@ app::app() {
     glewExperimental = GL_TRUE;
     glewInit();
 
-    my_gui = new gui(*this);
-
-    while (!glfwWindowShouldClose(window)) {
-
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        my_gui->run();
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-
-
+    // Setup ImGui context
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui::StyleColorsDark();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+
+    my_gui = std::make_unique<gui>(*this);
 }
 
 app::~app() {
-    delete my_gui;
+    glfwTerminate();
+    my_gui.reset();
+}
+
+void app::loop() {
+    // Poll for events
+    glfwPollEvents();
+
+    int display_w, display_h;
+    glfwGetFramebufferSize(window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT); // clear color buffer with the specified color
+
+    my_gui->run();
+
+    /* Swap front and back buffers */
+    glfwSwapBuffers(window);
+
+    /* Poll for and process events */
+    glfwPollEvents();
 }

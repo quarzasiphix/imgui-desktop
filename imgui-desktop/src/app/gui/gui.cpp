@@ -1,6 +1,6 @@
 #include "gui.hpp"
 
-gui::gui(app& app_object) : my_app(app_object) {
+gui::gui(app& app_object) : my_app(&app_object) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -29,12 +29,17 @@ gui::gui(app& app_object) : my_app(app_object) {
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-
     // Setup ImGui context
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(app_object.window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
+}
 
+gui::~gui() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    delete& my_app;
 }
 
 void gui::run() {
@@ -51,6 +56,7 @@ void gui::run() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();
