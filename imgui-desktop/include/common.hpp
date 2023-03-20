@@ -8,6 +8,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+//#include <app/app.hpp>
+#include <app/gui/gui.hpp>
+
 #include <iostream>
 #include <memory>
 

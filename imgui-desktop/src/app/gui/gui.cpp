@@ -1,8 +1,7 @@
-#include "gui.hpp"
+#include <common.hpp>
 
-bool gui::init(app* app_object) {
+bool gui::init() {
     // Setup Dear ImGui context
-    my_app = std::unique_ptr<app>(app_object);
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -32,7 +31,7 @@ bool gui::init(app* app_object) {
 
     // Setup ImGui context
     ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(app_object->window, true);
+    ImGui_ImplGlfw_InitForOpenGL(this->window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
 
     return true;
@@ -42,7 +41,6 @@ gui::~gui() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    delete& my_app;
 }
 
 void gui::run() {

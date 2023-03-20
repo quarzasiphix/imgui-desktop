@@ -13,12 +13,107 @@ int main(int, char**) {
         return 1;
     }
 
-    // Set OpenGL version to 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    if (glewIsSupported("GL_VERSION_3_3")) {
+        // Set OpenGL version to 4.5
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        printf("using ver 3.3");
+    }
+    else if (glewIsSupported("GL_VERSION_2_1")) {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        printf("using ver 2.1");
+    }
+    else {
+        // No supported version of OpenGL found
+        printf("No supported version of OpenGL found, trying 3.3\n");
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-    window = glfwCreateWindow(800, 600, "ImGui OpenGL Example", NULL, NULL);
+    }
+
+    gui my_gui;
+
+    my_gui.window = glfwCreateWindow(800, 600, "imgui desktop", NULL, NULL);
+
+    // Make the window's context current
+    glfwMakeContextCurrent(my_gui.window);
+
+    // Initialize GLEW
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+        std::cin.get();
+        return 1;
+    }
+    
+
+    my_gui.init();
+    while (!glfwWindowShouldClose(my_gui.window)) {
+        // Poll for and process events
+        glfwPollEvents();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(my_gui.window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT); // clear color buffer with the specified color
+
+        my_gui.run();
+
+        //Swap front and back buffers 
+        glfwSwapBuffers(my_gui.window);
+    }
+
+    // Cleanup
+    
+    my_gui.~gui();
+    glfwTerminate();
+
+}
+
+
+
+/*  working code, broken viewport and docking tho lol
+ GLFWwindow* window;
+
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // Initialize GLFW
+    if (!glfwInit()) {
+        return 1;
+    }
+
+    if (glewIsSupported("GL_VERSION_3_3")) {
+        // Set OpenGL version to 4.5
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        printf("using ver 3.3");
+    }
+    else if (glewIsSupported("GL_VERSION_2_1")) {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        printf("using ver 2.1");
+    }
+    else {
+        // No supported version of OpenGL found
+        printf("No supported version of OpenGL found, trying 3.3\n");
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
+    }
+
+    
+
+    window = glfwCreateWindow(800, 600, "imgui desktop", NULL, NULL);
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
@@ -28,6 +123,7 @@ int main(int, char**) {
     GLenum err = glewInit();
     if (err != GLEW_OK) {
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+        std::cin.get();
         return 1;
     }
 
@@ -35,7 +131,8 @@ int main(int, char**) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    ImGui_ImplOpenGL3_Init("#version 330 core");
+    if (glewIsSupported("GL_VERSION_3_3")) ImGui_ImplOpenGL3_Init("#version 330");
+    else if (glewIsSupported("GL_VERSION_2_1")) ImGui_ImplOpenGL3_Init("#version 120");
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui::StyleColorsDark();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -60,6 +157,7 @@ int main(int, char**) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+
         // Set up dockspace
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse | ImGuiDockNodeFlags_NoCloseButton | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiColumnsFlags_NoResize | ImGuiWindowFlags_NoDocking;
@@ -83,6 +181,7 @@ int main(int, char**) {
         }
 
         ImGui::Begin("yo");
+
         ImGui::Text("sup");
         ImGui::End();
 
@@ -96,9 +195,9 @@ int main(int, char**) {
             ImGui::RenderPlatformWindowsDefault();
         }
 
-        /* Swap front and back buffers */
+        //Swap front and back buffers 
         glfwSwapBuffers(window);
-    }
+        }
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
@@ -106,4 +205,5 @@ int main(int, char**) {
     ImGui::DestroyContext();
     glfwTerminate();
 
-}
+
+*/

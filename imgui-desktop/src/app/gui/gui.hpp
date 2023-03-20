@@ -1,13 +1,11 @@
 #pragma once
 #include <common.hpp>
-#include <app/app.hpp>
-class app;
+
 class gui {
+public:
+	GLFWwindow* window;
 	~gui();
-	bool init(app* app_object);
+	bool init();
 	void run();
 	void face();
-private:
-	std::unique_ptr<app> my_app{};
 };
-
