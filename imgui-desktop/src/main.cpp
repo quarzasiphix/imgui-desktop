@@ -70,6 +70,8 @@ int main(int, char**) {
     // Cleanup
     
     my_gui.~gui();
+    
+    glfwDestroyWindow(my_gui.window);
     glfwTerminate();
 }
 

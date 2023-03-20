@@ -11,4 +11,5 @@ public:
 	bool init();
 	void run();
 	void face();
+	void dock();
 };

@@ -30,7 +30,6 @@ bool gui::init() {
     }
 
     // Setup ImGui context
-    ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(this->window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
 
@@ -50,6 +49,7 @@ void gui::run() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    dock();
     face();
 
     ImGui::Render();
@@ -77,4 +77,28 @@ void gui::face() {
     ImGui::ColorEdit3("clear color", (float*)&this->clear_color);
     
     ImGui::End();
+}
+
+void gui::dock() {
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBringToFrontOnFocus;
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        dockspace_flags |= ImGuiDockNodeFlags_PassthruCentralNode;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+    }
+    ImGui::SetNextWindowSize(ImVec2((float)display_w, (float)display_h));
+    //ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::Begin("Dockspace");
+    ImGui::DockSpace(ImGui::GetID("MyDockspace"), ImVec2(0.0f, 0.0f), dockspace_flags);
+
+
+    // Add menu bar
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            ImGui::MenuItem("Save", NULL);
+            ImGui::MenuItem("Exit", NULL);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 }
