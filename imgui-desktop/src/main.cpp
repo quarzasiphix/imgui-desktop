@@ -51,18 +51,15 @@ int main(int, char**) {
         return 1;
     }
     
+    if (!my_gui.init()) {
+        printf("failed to start imgui");
+        return 1;
+    }
 
-    my_gui.init();
     while (!glfwWindowShouldClose(my_gui.window)) {
         // Poll for and process events
         glfwPollEvents();
 
-        int display_w, display_h;
-        glfwGetFramebufferSize(my_gui.window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT); // clear color buffer with the specified color
 
         my_gui.run();
 
@@ -74,7 +71,6 @@ int main(int, char**) {
     
     my_gui.~gui();
     glfwTerminate();
-
 }
 
 
